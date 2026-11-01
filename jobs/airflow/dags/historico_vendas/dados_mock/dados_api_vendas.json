@@ -1,0 +1,218 @@
+[
+  {
+    "pedido_externo_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+    "cliente_cpf": "11111111111",
+    "data_compra": "2026-10-30T09:15:00Z",
+    "valor_total": "199.90",
+    "metodo_pagamento": "PIX",
+    "itens_pedido": [
+      {
+        "sku_externo": "SKU-TNS-001",
+        "nome_produto": "Tênis Runner Pro",
+        "categoria": "Tênis",
+        "tamanho": "40",
+        "cor": "Preto",
+        "preco_unitario": "199.90",
+        "quantidade": "1"
+      }
+    ]
+  },
+  {
+    "pedido_externo_id": "c9bf9e57-1685-4c89-bafb-ff5af830be8a",
+    "cliente_cpf": "22222222222",
+    "data_compra": "2026-10-30T10:30:00Z",
+    "valor_total": "349.90",
+    "metodo_pagamento": "CARTAO_CREDITO",
+    "itens_pedido": [
+      {
+        "sku_externo": "SKU-BTA-002",
+        "nome_produto": "Bota Chelsea Couro",
+        "categoria": "Bota",
+        "tamanho": "39",
+        "cor": "Marrom",
+        "preco_unitario": "250.00",
+        "quantidade": "1"
+      },
+      {
+        "sku_externo": "SKU-MOC-003",
+        "nome_produto": "Mocassim Casual",
+        "categoria": "Sapato",
+        "tamanho": "39",
+        "cor": "Azul",
+        "preco_unitario": "99.90",
+        "quantidade": "1"
+      }
+    ]
+  },
+  {
+    "pedido_externo_id": "550e8400-e29b-41d4-a716-446655440000",
+    "cliente_cpf": "33333333333",
+    "data_compra": "2026-10-30T11:45:00Z",
+    "valor_total": "299.00",
+    "metodo_pagamento": "CARTAO_DEBITO",
+    "itens_pedido": [
+      {
+        "sku_externo": "SKU-SLT-004",
+        "nome_produto": "Salto Fino Elegance",
+        "categoria": "Salto",
+        "tamanho": "36",
+        "cor": "Vermelho",
+        "preco_unitario": "299.00",
+        "quantidade": "1"
+      }
+    ]
+  },
+  {
+    "pedido_externo_id": "8a32a67e-6531-4c60-ad6a-54316688cb0c",
+    "cliente_cpf": "44444444444",
+    "data_compra": "2026-10-30T13:20:00Z",
+    "valor_total": "450.00",
+    "metodo_pagamento": "PIX",
+    "itens_pedido": [
+      {
+        "sku_externo": "SKU-SND-005",
+        "nome_produto": "Sandália Rasteira",
+        "categoria": "Sandália",
+        "tamanho": "37",
+        "cor": "Bege",
+        "preco_unitario": "150.00",
+        "quantidade": "1"
+      },
+      {
+        "sku_externo": "SKU-TNS-006",
+        "nome_produto": "Tênis Slip On",
+        "categoria": "Tênis",
+        "tamanho": "37",
+        "cor": "Branco",
+        "preco_unitario": "150.00",
+        "quantidade": "1"
+      },
+      {
+        "sku_externo": "SKU-TNS-007",
+        "nome_produto": "Tênis Casual Lona",
+        "categoria": "Tênis",
+        "tamanho": "38",
+        "cor": "Preto",
+        "preco_unitario": "150.00",
+        "quantidade": "1"
+      }
+    ]
+  },
+  {
+    "pedido_externo_id": "b22b72b9-e160-449f-b98a-21151a660a5d",
+    "cliente_cpf": "55555555555",
+    "data_compra": "2026-10-30T14:10:00Z",
+    "valor_total": "120.50",
+    "metodo_pagamento": "BOLETO",
+    "itens_pedido": [
+      {
+        "sku_externo": "SKU-SND-008",
+        "nome_produto": "Chinelo Slide",
+        "categoria": "Sandália",
+        "tamanho": "42",
+        "cor": "Azul Marinho",
+        "preco_unitario": "120.50",
+        "quantidade": "1"
+      }
+    ]
+  },
+  {
+    "pedido_externo_id": "d9f8c6b7-a36c-4876-9289-49788f237c15",
+    "cliente_cpf": "66666666666",
+    "data_compra": "2026-10-30T15:55:00Z",
+    "valor_total": "400.00",
+    "metodo_pagamento": "CARTAO_CREDITO",
+    "itens_pedido": [
+      {
+        "sku_externo": "SKU-BTA-009",
+        "nome_produto": "Coturno Tratorado",
+        "categoria": "Bota",
+        "tamanho": "35",
+        "cor": "Preto",
+        "preco_unitario": "350.00",
+        "quantidade": "1"
+      },
+      {
+        "sku_externo": "SKU-ACS-010",
+        "nome_produto": "Palmilha Gel",
+        "categoria": "Acessório",
+        "tamanho": "35",
+        "cor": "Transparente",
+        "preco_unitario": "50.00",
+        "quantidade": "1"
+      }
+    ]
+  },
+  {
+    "pedido_externo_id": "a10b42c6-d82b-4573-81e0-634a36f947a2",
+    "cliente_cpf": "77777777777",
+    "data_compra": "2026-10-30T17:05:00Z",
+    "valor_total": "399.90",
+    "metodo_pagamento": "PIX",
+    "itens_pedido": [
+      {
+        "sku_externo": "SKU-SLT-011",
+        "nome_produto": "Scarpin Verniz",
+        "categoria": "Salto",
+        "tamanho": "38",
+        "cor": "Nude",
+        "preco_unitario": "399.90",
+        "quantidade": "1"
+      }
+    ]
+  },
+  {
+    "pedido_externo_id": "1f2e3d4c-5b6a-7890-1234-56789abcdef0",
+    "cliente_cpf": "11111111111",
+    "data_compra": "2026-10-30T18:22:00Z",
+    "valor_total": "149.90",
+    "metodo_pagamento": "CARTAO_CREDITO",
+    "itens_pedido": [
+      {
+        "sku_externo": "SKU-TNS-012",
+        "nome_produto": "Tênis Skate Classic",
+        "categoria": "Tênis",
+        "tamanho": "40",
+        "cor": "Bordô",
+        "preco_unitario": "149.90",
+        "quantidade": "1"
+      }
+    ]
+  },
+  {
+    "pedido_externo_id": "e8a9b0c1-d2e3-f4a5-b6c7-d8e9f0a1b2c3",
+    "cliente_cpf": "22222222222",
+    "data_compra": "2026-10-30T19:40:00Z",
+    "valor_total": "189.00",
+    "metodo_pagamento": "PIX",
+    "itens_pedido": [
+      {
+        "sku_externo": "SKU-SND-013",
+        "nome_produto": "Papete Conforto",
+        "categoria": "Sandália",
+        "tamanho": "39",
+        "cor": "Verde Oliva",
+        "preco_unitario": "189.00",
+        "quantidade": "1"
+      }
+    ]
+  },
+  {
+    "pedido_externo_id": "9d8e7f6a-5b4c-3d2e-1f0a-9b8c7d6e5f4a",
+    "cliente_cpf": "33333333333",
+    "data_compra": "2026-10-30T21:10:00Z",
+    "valor_total": "179.90",
+    "metodo_pagamento": "CARTAO_CREDITO",
+    "itens_pedido": [
+      {
+        "sku_externo": "SKU-TNS-014",
+        "nome_produto": "Tênis Esportivo Fit",
+        "categoria": "Tênis",
+        "tamanho": "36",
+        "cor": "Rosa",
+        "preco_unitario": "179.90",
+        "quantidade": "1"
+      }
+    ]
+  }
+]
