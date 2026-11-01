@@ -23,7 +23,8 @@ docker compose down
 docker compose down -v   
 ```
 
-## Estrutura do Projeto
+## 📁 Estrutura do Projeto
+```bash
 maluma-shoes-fidelizacao-clientes/
 ├── backend/               # Código do servidor/API principal da aplicação
 ├── frontend/              # Interface do usuário (sistema web)
@@ -41,16 +42,16 @@ maluma-shoes-fidelizacao-clientes/
 │   └── 03-initial...      # Carga maciça dos 20.000 registros mockados (tab historico_vendas)
 ├── .env                   <<-- ADICIONE SEU ARQUIVO .env AQUI
 └── docker-compose.yaml    # Arquivo de orquestração da infraestrutura Docker
+```
 
-
-### Como checar os dados pelo pgAdmin
+### 🎲 Como checar os dados pelo pgAdmin
 
 1. Acesse o painel do pgAdmin pelo navegador ([http://localhost:8084](http://localhost:8084)).
 2. Faça o login com as credenciais definidas no seu arquivo `.env`.
 3. Adicione um novo servidor com nome `maluma_shoes`, informando host, port, database, user e password (todas as informações no `.env`).
 4. Navegue até o banco `sistema_fidelizacao_clientes` > **Schemas** > **Tables** para visualizar a tabela `historico_vendas`.
 
-## ⚙️ Airflow e Rotina ETL
+### 📊 Airflow e Rotina ETL
 
 O Apache Airflow é utilizado para buscar novos dados de vendas (via API mockada) e inseri-los no banco sem duplicidade.
 
