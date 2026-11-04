@@ -1,0 +1,5 @@
+# Scripts executados dentro de contêineres Linux precisam de LF. Sem isto, o checkout no Windows
+# (core.autocrlf=true) grava CRLF e o Postgres aborta a carga inicial com
+# "/bin/bash^M: bad interpreter", deixando o volume sem a tabela historico_vendas.
+*.sh text eol=lf
+backend/mvnw text eol=lf

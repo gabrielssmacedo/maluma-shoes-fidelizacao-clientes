@@ -1,9 +1,10 @@
 import json
 from pathlib import Path
+import re
 import uuid
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone
+from typing import Optional
 import os
-import json
 import psycopg2
 from psycopg2.extras import execute_values
 import logging
@@ -33,10 +34,35 @@ def get_mock_api() -> dict:
 
 
 
+# Fuso da loja (America/Sao_Paulo). Offset fixo: o Brasil não tem horário de verão desde 2019, e o
+# Python 3.8 da imagem do Airflow 2.8 não tem zoneinfo.
+FUSO_LOJA = timezone(timedelta(hours=-3))
+
+
+def dia_alvo(**kwargs) -> date:
+    """
+    Dia (no fuso da loja) cujas vendas a execução carrega:
+    - disparo manual com config {"data": "yyyy-MM-dd"}: aquele dia (útil para testar com o mock);
+    - execução do Airflow: o dia anterior ao fim do intervalo da execução. Na agendada das 03:00 é
+      "ontem", e reexecutar uma execução antiga carrega o dia dela, não o de hoje;
+    - fora do Airflow (teste local): ontem.
+    """
+    dag_run = kwargs.get('dag_run')
+    conf = (dag_run.conf or {}) if dag_run is not None else {}
+    if conf.get('data'):
+        return date.fromisoformat(conf['data'])
+    referencia = kwargs.get('data_interval_end') or datetime.now(timezone.utc)
+    return (referencia.astimezone(FUSO_LOJA) - timedelta(days=1)).date()
+
+
+def normalizar_cpf(cpf) -> Optional[str]:
+    """Só os 11 dígitos, o formato que o backend busca; None se não sobrar um CPF."""
+    digitos = re.sub(r'\D', '', str(cpf))
+    return digitos if len(digitos) == 11 else None
+
+
 def extrair_e_transformar(**kwargs):
-    # O logical_date garante que se rodar um job de dias atrás, ele filtra a data correta
-    data_execucao = datetime.now().astimezone()
-    ontem = (data_execucao - timedelta(days=2)).date()
+    ontem = dia_alvo(**kwargs)
 
     logger.info(f"[INICIO] Iniciando a ETL do histórico vendas do dia {ontem}")
 
@@ -53,8 +79,13 @@ def extrair_e_transformar(**kwargs):
     for venda in vendas_api:
         data_venda = datetime.fromisoformat(venda['data_compra'].replace('Z', '+00:00'))
         
-        # Filtra apenas vendas do dia anterior
-        if data_venda.date() == ontem:
+        cliente_cpf = normalizar_cpf(venda['cliente_cpf'])
+        if cliente_cpf is None:
+            logger.warning(f"[FORMATACAO] Venda {venda['pedido_externo_id']} ignorada: CPF inválido")
+            continue
+
+        # Filtra apenas vendas do dia alvo, no fuso da loja
+        if data_venda.astimezone(FUSO_LOJA).date() == ontem:
             # Gera o ID da tabela principal em Python para associá-lo aos itens
             compra_id = str(uuid.uuid4())
             
@@ -75,7 +106,7 @@ def extrair_e_transformar(**kwargs):
             vendas_processadas.append({
                 "id": compra_id,
                 "pedido_externo_id": str(venda["pedido_externo_id"]),
-                "cliente_cpf": str(venda["cliente_cpf"]),
+                "cliente_cpf": cliente_cpf,
                 "data_compra": data_venda.isoformat(),
                 "valor_total": float(venda["valor_total"]),
                 "metodo_pagamento": str(venda["metodo_pagamento"]),
