@@ -95,3 +95,44 @@ export function buscarHistoricoCliente({ cpf, page = 0, size = 20 } = {}) {
     `/clientes/${encodeURIComponent(cpfNumeros)}/vendas?${parametros.toString()}`,
   );
 }
+
+export async function buscarVendaDoCliente({ cpf, vendaId }) {
+  const cpfLimpo = cpf.replace(/\D/g, "");
+
+  if (cpfLimpo.length !== 11) {
+    throw new Error("CPF inválido.");
+  }
+
+  let page = 0;
+  let totalPages = 1;
+
+  while (page < totalPages) {
+    const params = new URLSearchParams({
+      page: String(page),
+      size: "100",
+    });
+
+    const response = await fetch(
+      `/api/v1/clientes/${cpfLimpo}/vendas?${params}`
+    );
+
+    if (!response.ok) {
+      throw new Error("Não foi possível buscar os itens da venda.");
+    }
+
+    const resultado = await response.json();
+    totalPages = resultado.totalPages;
+
+    const vendaEncontrada = resultado.content.find(
+      (venda) => venda.id === vendaId
+    );
+
+    if (vendaEncontrada) {
+      return vendaEncontrada;
+    }
+
+    page++;
+  }
+
+  throw new Error("Venda não encontrada no histórico do cliente.");
+}
