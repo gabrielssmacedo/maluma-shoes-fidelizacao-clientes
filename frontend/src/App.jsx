@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { buscarHistoricoCliente, buscarVendas } from './services/vendas.js';
+import { buscarVendaDoCliente, buscarVendas } from './services/vendas.js';
 
 const TAMANHO_PAGINA = 20;
 
@@ -48,8 +48,8 @@ function App() {
   const [atualizacao, setAtualizacao] = useState(0);
 
   const [clienteSelecionado, setClienteSelecionado] = useState('');
-  const [historicoCliente, setHistoricoCliente] = useState(null);
-  const [paginaCliente, setPaginaCliente] = useState(0);
+  const [idVendaSelecionada, setIdVendaSelecionada] = useState('');
+  const [vendaDetalhada, setVendaDetalhada] = useState(null);
   const [carregandoCliente, setCarregandoCliente] = useState(false);
   const [erroCliente, setErroCliente] = useState('');
 
@@ -91,37 +91,36 @@ function App() {
   }, [pagina, filtrosAplicados, atualizacao]);
 
   useEffect(() => {
-    if (!clienteSelecionado) return undefined;
+    if (!clienteSelecionado || !idVendaSelecionada) return undefined;
 
     let cancelado = false;
 
-    async function carregarHistoricoCliente() {
+    async function carregarVendaSelecionada() {
       setCarregandoCliente(true);
       setErroCliente('');
-      setHistoricoCliente(null);
+      setVendaDetalhada(null);
 
       try {
-        const resultado = await buscarHistoricoCliente({
+        const resultado = await buscarVendaDoCliente({
           cpf: clienteSelecionado,
-          page: paginaCliente,
-          size: TAMANHO_PAGINA,
+          vendaId: idVendaSelecionada,
         });
 
-        if (!cancelado) setHistoricoCliente(resultado);
+        if (!cancelado) setVendaDetalhada(resultado);
       } catch (erroConsulta) {
         if (!cancelado) {
-          setErroCliente(erroConsulta.message || 'Não foi possível carregar o histórico do cliente.');
+          setErroCliente(erroConsulta.message || 'Não foi possível carregar os itens desta venda.');
         }
       } finally {
         if (!cancelado) setCarregandoCliente(false);
       }
     }
 
-    carregarHistoricoCliente();
+    carregarVendaSelecionada();
     return () => {
       cancelado = true;
     };
-  }, [clienteSelecionado, paginaCliente]);
+  }, [clienteSelecionado, idVendaSelecionada]);
 
   function pesquisarVendas(evento) {
     evento.preventDefault();
@@ -157,18 +156,19 @@ function App() {
     setAtualizacao((valorAtual) => valorAtual + 1);
   }
 
-  function abrirHistoricoCliente(cpf) {
-    setPaginaCliente(0);
-    setHistoricoCliente(null);
+  function abrirHistoricoCliente(venda) {
+    setVendaDetalhada(null);
     setErroCliente('');
-    setClienteSelecionado(cpf);
+    setCarregandoCliente(true);
+    setClienteSelecionado(venda.clienteCpf);
+    setIdVendaSelecionada(venda.id);
   }
 
   function fecharHistoricoCliente() {
     setClienteSelecionado('');
-    setHistoricoCliente(null);
+    setIdVendaSelecionada('');
+    setVendaDetalhada(null);
     setErroCliente('');
-    setPaginaCliente(0);
   }
 
   const primeiraVenda = totalVendas === 0 ? 0 : pagina * TAMANHO_PAGINA + 1;
@@ -308,9 +308,9 @@ function App() {
                           <button
                             className="text-button"
                             type="button"
-                            onClick={() => abrirHistoricoCliente(venda.clienteCpf)}
+                            onClick={() => abrirHistoricoCliente(venda)}
                           >
-                            Histórico do cliente
+                            Ver itens
                           </button>
                         </td>
                       </tr>
@@ -365,92 +365,57 @@ function App() {
           <section className="history-modal" role="dialog" aria-modal="true" aria-labelledby="historico-cliente-titulo">
             <header className="modal-header">
               <div>
-                <span className="modal-eyebrow">Histórico individual</span>
-                <h2 id="historico-cliente-titulo">Compras do cliente</h2>
+                <span className="modal-eyebrow">Detalhes da compra</span>
+                <h2 id="historico-cliente-titulo">Itens da venda</h2>
                 <p>CPF: {formatarCpf(clienteSelecionado)}</p>
               </div>
-              <button className="close-button" type="button" onClick={fecharHistoricoCliente} aria-label="Fechar histórico">
+              <button className="close-button" type="button" onClick={fecharHistoricoCliente} aria-label="Fechar detalhes da venda">
                 ×
               </button>
             </header>
 
             <div className="modal-content">
-              {carregandoCliente && <div className="modal-state">Carregando histórico do cliente...</div>}
+              {carregandoCliente && <div className="modal-state">Carregando itens da venda...</div>}
               {erroCliente && <div className="message message-error" role="alert">{erroCliente}</div>}
 
-              {!carregandoCliente && !erroCliente && historicoCliente && (
-                <>
-                  {historicoCliente.content.length === 0 ? (
-                    <div className="modal-state">Esse cliente não possui compras registradas.</div>
-                  ) : (
-                    <div className="customer-orders">
-                      {historicoCliente.content.map((venda) => (
-                        <article className="order-card" key={venda.id}>
-                          <div className="order-card-header">
-                            <div>
-                              <strong>{venda.pedidoExternoId || venda.id}</strong>
-                              <span>{formatarData(venda.dataCompra)}</span>
-                            </div>
-                            <div className="order-total">
-                              <strong>{formatarValor(venda.valorTotal)}</strong>
-                              <span>{venda.metodoPagamento || 'Pagamento não informado'}</span>
-                            </div>
-                          </div>
-
-                          <div className="items-list">
-                            <h3>Itens do pedido</h3>
-                            {Array.isArray(venda.itensPedido) && venda.itensPedido.length > 0 ? (
-                              venda.itensPedido.map((item) => (
-                                <div className="item-row" key={item.id}>
-                                  <div>
-                                    <strong>{item.nomeProduto || 'Produto sem nome'}</strong>
-                                    <span>
-                                      {[item.categoria, item.cor, item.tamanho ? `Tam. ${item.tamanho}` : '']
-                                        .filter(Boolean)
-                                        .join(' · ')}
-                                    </span>
-                                    <small>{item.skuExterno || 'SKU não informado'}</small>
-                                  </div>
-                                  <div className="item-price">
-                                    <strong>{formatarValor(item.precoUnitario)}</strong>
-                                    <span>Qtd.: {item.quantidade ?? 0}</span>
-                                  </div>
-                                </div>
-                              ))
-                            ) : (
-                              <p className="no-items">A API não retornou itens para este pedido.</p>
-                            )}
-                          </div>
-                        </article>
-                      ))}
+              {!carregandoCliente && !erroCliente && vendaDetalhada && (
+                <article className="order-card" key={vendaDetalhada.id}>
+                  <div className="order-card-header">
+                    <div>
+                      <strong>{vendaDetalhada.pedidoExternoId || vendaDetalhada.id}</strong>
+                      <span>{formatarData(vendaDetalhada.dataCompra)}</span>
                     </div>
-                  )}
-
-                  <div className="pagination-bar modal-pagination">
-                    <span>{historicoCliente.totalElements.toLocaleString('pt-BR')} compra(s) no total</span>
-                    <div className="pagination-controls">
-                      <button
-                        className="button button-secondary pagination-button"
-                        type="button"
-                        disabled={paginaCliente <= 0 || carregandoCliente}
-                        onClick={() => setPaginaCliente((paginaAtual) => Math.max(0, paginaAtual - 1))}
-                      >
-                        Anterior
-                      </button>
-                      <span className="pagination-current">
-                        Página {historicoCliente.totalPages === 0 ? 0 : paginaCliente + 1} de {historicoCliente.totalPages}
-                      </span>
-                      <button
-                        className="button button-secondary pagination-button"
-                        type="button"
-                        disabled={historicoCliente.totalPages === 0 || paginaCliente >= historicoCliente.totalPages - 1 || carregandoCliente}
-                        onClick={() => setPaginaCliente((paginaAtual) => paginaAtual + 1)}
-                      >
-                        Próxima
-                      </button>
+                    <div className="order-total">
+                      <strong>{formatarValor(vendaDetalhada.valorTotal)}</strong>
+                      <span>{vendaDetalhada.metodoPagamento || 'Pagamento não informado'}</span>
                     </div>
                   </div>
-                </>
+
+                  <div className="items-list">
+                    <h3>Itens deste pedido</h3>
+                    {Array.isArray(vendaDetalhada.itensPedido) && vendaDetalhada.itensPedido.length > 0 ? (
+                      vendaDetalhada.itensPedido.map((item) => (
+                        <div className="item-row" key={item.id}>
+                          <div>
+                            <strong>{item.nomeProduto || 'Produto sem nome'}</strong>
+                            <span>
+                              {[item.categoria, item.cor, item.tamanho ? `Tam. ${item.tamanho}` : '']
+                                .filter(Boolean)
+                                .join(' · ')}
+                            </span>
+                            <small>{item.skuExterno || 'SKU não informado'}</small>
+                          </div>
+                          <div className="item-price">
+                            <strong>{formatarValor(item.precoUnitario)}</strong>
+                            <span>Qtd.: {item.quantidade ?? 0}</span>
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <p className="no-items">A API não retornou itens para esta venda.</p>
+                    )}
+                  </div>
+                </article>
               )}
             </div>
           </section>
