@@ -76,6 +76,28 @@ services:
       postgres:
         condition: service_healthy
 
+  frontend:
+    build: ./frontend
+    container_name: maluma_frontend
+    restart: always
+    environment:
+      # Sobrescreve o localhost pelo nome do container do backend na rede interna do Docker
+      - BACKEND_URL=http://backend:8081
+      - API_KEY=${API_KEY}
+    ports:
+      - "3000:5173"
+    volumes:
+      # Mapeia a pasta local para dentro do container para habilitar o hot-reload
+      - ./frontend:/app
+      # Evita que a pasta node_modules local sobrescreva a do container
+      - /app/node_modules
+      # O seu vite.config.js tenta ler o .env um nível acima (raiz do projeto).
+      # Mapeamos o .env da raiz para a raiz do container para evitar o erro de API_KEY ausente.
+      - ./.env:/.env
+    depends_on:
+      backend:
+        condition: service_healthy
+
   pgadmin:
     image: dpage/pgadmin4:9.19
     container_name: maluma_pgadmin
